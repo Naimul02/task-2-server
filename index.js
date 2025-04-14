@@ -1,9 +1,13 @@
 const express = require('express')
 const app = express()
-const port = 5000
+const port = 5000;
+const cors = require('cors');
 require('dotenv').config()
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
+// middleware
+app.use(cors())
+app.use(express.json())
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.avssyq6.mongodb.net/?appName=Cluster0`;
 
@@ -32,6 +36,20 @@ async function run() {
         const query = {};
         const result = await infoCollections.find(query).toArray();
         res.send(result)
+    })
+
+
+    app.get('/categories/:id' , async(req , res) => {
+      const id = req.params.id;
+      const  query = {_id : new ObjectId(id)};
+      const result = await infoCollections.findOne(query);
+      
+      console.log("resultt : " , result)
+
+      
+      
+      const data = result?.subcategories?.map(category => category.duas);
+      res.send(data)
     })
 
 
